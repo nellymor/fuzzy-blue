@@ -1,0 +1,94 @@
+<html>
+
+<h1>Handsontable with function data source and sorting</h1>
+
+<script src="https://docs.handsontable.com//scripts/jquery.min.js"></script>
+<apex:includeScript value="{!URLFOR($Resource.handsontablehot, 'handsontable-master/dist/handsontable.full.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.handsontablehot, 'handsontable-master/dist/zeroclipboard/ZeroClipboard.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.handsontablehot, 'handsontable-master/dist/handsontable.full.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.handsontablehot, 'handsontable-master/demo/css/samples.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.handsontablehot, 'handsontable-master/plugins/bootstrap/handsontable.bootstrap.css')}"/>
+<div id="example6" class="hot handsontable"></div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  var
+    container6 = document.getElementById('example6'),
+    hot6;
+  
+  hot6 = new Handsontable(container6, {
+    data: [
+      model({id: 1, name: 'Ted Right', address: 'Arkansas'}),
+      model({id: 2, name: 'Frank Honest', address: 'Idaho'}),
+      model({id: 3, name: 'Joan Well', address: 'Colorado'}),
+      model({id: 4, name: 'Gail Polite', address: 'Georgia'}),
+      model({id: 5, name: 'Michael Fair', address: 'Nevada'})
+    ],
+    dataSchema: model,
+    colHeaders: ['ID', 'Name', 'Address'],
+    columns: [
+      {data: property('id')},
+      {data: property('name')},
+      {data: property('address')}
+    ],
+    columnSorting: true,
+    minSpareRows: 1
+  });
+  
+  function model(opts) {
+    var
+      _pub = {},
+      _priv = {
+        "id": undefined,
+        "name": undefined,
+        "address": undefined
+      };
+  
+    for (var i in opts) {
+      if (opts.hasOwnProperty(i)) {
+        _priv[i] = opts[i];
+      }
+    }
+  
+    _pub.attr = function (attr, val) {
+      if (typeof val === 'undefined') {
+        window.console && console.log("\t\tGET the", attr, "value of", _pub);
+        return _priv[attr];
+      }
+      window.console && console.log("SET the", attr, "value of", _pub);
+      _priv[attr] = val;
+  
+      return _pub;
+    };
+  
+    return _pub;
+  }
+  
+  function property(attr) {
+    return function (row, value) {
+      return row.attr(attr, value);
+    }
+  }
+  
+  function bindDumpButton() {
+      if (typeof Handsontable === "undefined") {
+        return;
+      }
+  
+      Handsontable.Dom.addEvent(document.body, 'click', function (e) {
+  
+        var element = e.target || e.srcElement;
+  
+        if (element.nodeName == "BUTTON" && element.name == 'dump') {
+          var name = element.getAttribute('data-dump');
+          var instance = element.getAttribute('data-instance');
+          var hot = window[instance];
+          console.log('data of ' + name, hot.getData());
+        }
+      });
+    }
+  bindDumpButton();
+
+});
+</script>
+</html>
